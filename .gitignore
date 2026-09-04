@@ -1,0 +1,5 @@
+*.mp4
+*.pdf
+*.zip
+.DS_Store
+.vscode/
