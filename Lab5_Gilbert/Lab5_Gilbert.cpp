@@ -16,8 +16,35 @@ void   printReading(double value);
 
 int main() {
 
-
+    int choice;         //variable for switch called choice
+    do {
+        cout << "\n=== WEATHER ANALYSIS STATION ===\n"
+        << "1. Convert Celcius to Fahrenheit\n"
+        << "2. Convert Fahrenheit to Celsius\n"
+        << "3. Classify Temperature\n"
+        << "4. Find min/max of two readings\n"
+        << "5. Compute heat index\n"
+        << "6. Print a reading (overload demo)\n"
+        << "7. Quit\n"
+        << "Choice: ";
+        cin >> choice;                        //ask for input for switch
+        switch (choice) {                     //* prompt, call celsiusToFahrenheit, display */ b
+            case 1: {double c; cout << "Enter Celsius: "; cin >> c; celsiusToFahrenheit(c);} break;
+            case 2: {} break;
+            case 3: {} break;
+            case 4: {} break;
+            case 5: {} break;
+            case 6: {} break;
+            case 7: cout << "Goodbye\n";         break;
+            default: cout << "Invalid choice\n"; break;
+        } 
+    } while (choice != 7);                   //loops until choice is = 7
 }
+
+
+
+
+
 
 
 // ─────────────────────────────────────────────────────────────
@@ -68,13 +95,12 @@ string classifyTemp(double celsius);
 //            3
 // ─────────────────────────────────────────────────────────────
 void getMinMax(double a, double b, double& minVal, double& maxVal) {
-    minVal = (a <= b) ? a : b;  // stores result directly in caller's variable
-    maxVal = (a >= b) ? a : b;
-}
 
-// Calling it correctly:
-double lo, hi;
-getMinMax(14.7, 22.3, lo, hi);  // lo=14.7, hi=22.3 in the caller
+}
+//  Calling it correctly:
+//  double lo, hi;
+//  getMinMax(14.7, 22.3, lo, hi);  // lo=14.7, hi=22.3 in the caller
+
 
 
 
