@@ -15,7 +15,6 @@ void   printReading(int value);
 void   printReading(double value);
 bool   inputValidation(double& input);
 bool   inputValidation(int& input);
-bool  choiceValidation(int& input);
 //--------------------------------------------------------------------
 
 int main() {
@@ -220,6 +219,15 @@ bool inputValidation(double& input) {
     
     return false;
 }
+// ─────────────────────────────────────────────────────────────
+// Function : inputValidation
+// Purpose  : Validates all the inputs before the functions so that program doesn't break
+// Parameter: input — the value to validate
+// Returns  : bool — true if valid, false otherwise
+// Test     : inputValidation(5)   -> true
+//            inputValidation(hi)  -> false
+//            inputValidation(0)   -> true
+// ─────────────────────────────────────────────────────────────
 bool   inputValidation(int& input) {
 
     if (cin >> input) {                    //check if input is valid and change input using &
@@ -287,7 +295,7 @@ bool   inputValidation(int& input) {
 // Step 3 — Creative Feature Documentation
 
 //     What function did you add? Write its complete signature and describe what it does in one sentence.
-//              double farheneittoKelvin(double f), it converts ferhenheit to kelvin using the formula (f - 32) * 5/9 + 273.15.
+//              double farheneittoKelvin(double f), it converts ferhenheit to kelvin using the formula (f - 32) / 1.8 + 273.15.
 //     Did you use pass-by-value or pass-by-reference in your new function, and why? What would go wrong if you had chosen the other approach?
 //              I used both, I used pass-by-reference and pass-by-value. I used pass-by-reference for the validation
 //              and then I used pass-by-value for the actual function doing the equation. I did this because the validation 
