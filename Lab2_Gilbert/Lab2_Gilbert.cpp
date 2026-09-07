@@ -10,6 +10,7 @@
 #include <iomanip>
 #include <string>
 using namespace std;
+
 const int MAX_PASSENGERS = 20;
 
 int     passengerCount;            //total passengers to screen
@@ -24,7 +25,9 @@ char noFlyResponse;                //y/n - is passenger on the no fly list?
 char idResponse;                   //y/n - does passenger have valid ID?
 bool onNoFlyList;                  //true if on no-fly registry
 bool hasValidId;                   //true if valid ID presented
-int seatChoice;                    //1=economy, 2=business, 3=first               
+int seatChoice;                    //1=economy, 2=business, 3=first 
+char tsaResponse;  
+bool tsaValid;                                 
 
 //added these for creative portion
 const int fclassCost = 1200;
@@ -40,10 +43,21 @@ const int turkeyMeal = 16;
 
 
 int main(){
+    
     cout << "\n";
     cout << "Passenger Count: ";
-    cin >> passengerCount;
+
+    if (!(cin >> passengerCount)) {
+        cout << "Invalid Input";
+        return 0;
+    }
+    else if (3 > passengerCount || passengerCount > MAX_PASSENGERS) {
+        cout << "Invalid passenger count";
+        return 0;
+    }
     cin.ignore(1000, '\n');
+
+
 
     for (int i = 1; i <= passengerCount; i++) {
         cout << "\n--- Passenger " << i << " of " << passengerCount << " ---\n";
@@ -56,21 +70,77 @@ int main(){
         cout << "On no-fly list? (Y/N): ";
         cin >> noFlyResponse;
         onNoFlyList = (noFlyResponse == 'y' || noFlyResponse == 'Y');
+
         
         cout << "Valid government ID? (Y/N): ";
         cin >> idResponse;
         hasValidId = (idResponse == 'y' || idResponse == 'Y');
         cin.ignore();
 
-        //elgibility screening logic
+        cout << "Have they gone through TSA? (Y/N): ";
+        cin >> tsaResponse;
+        tsaValid = (tsaResponse == 'y' || tsaResponse == 'Y');
+        cin.ignore();
+
+        // eligibility screening logic
         if (age < 12) {
-            cout << "DENIED: " << passengerName << " - minimum age not met.\n";
+            // Age is the first failed condition
+            if (onNoFlyList && !hasValidId && !tsaValid) {
+                cout << "DENIED: " << passengerName << " - minimum age not met, on no-fly list, no valid ID, and TSA not cleared.\n";
+            } 
+            else if (onNoFlyList && !hasValidId) {
+                cout << "DENIED: " << passengerName << " - minimum age not met, on no-fly list, and no valid ID.\n";
+            } 
+            else if (onNoFlyList && !tsaValid) {
+                cout << "DENIED: " << passengerName << " - minimum age not met, on no-fly list, and TSA not cleared.\n";
+            }
+            else if (!hasValidId && !tsaValid) {
+                cout << "DENIED: " << passengerName << " - minimum age not met, no valid ID, and TSA not cleared.\n";
+            }
+            else if (onNoFlyList) {
+                cout << "DENIED: " << passengerName << " - minimum age not met and on no-fly list.\n";
+            }
+            else if (!hasValidId) {
+                cout << "DENIED: " << passengerName << " - minimum age not met and no valid ID.\n";
+            }
+            else if (!tsaValid) {
+                cout << "DENIED: " << passengerName << " - minimum age not met and TSA not cleared.\n";
+            }
+            else {
+                cout << "DENIED: " << passengerName << " - minimum age not met.\n";
+            }
             deniedCount++;
-        } 
-        else if (onNoFlyList || !hasValidId) {        //design requirement for step 4?
-            cout << "DENIED: " << passengerName << " - passenger on no-fly list and no valid Id.\n";
+        }
+        else if (onNoFlyList) {
+            if (!hasValidId && !tsaValid) {
+                cout << "DENIED: " << passengerName << " - on no-fly list, no valid ID, and TSA not cleared.\n";
+            }
+            else if (!hasValidId) {
+                cout << "DENIED: " << passengerName << " - on no-fly list and no valid ID.\n";
+            }
+            else if (!tsaValid) {
+                cout << "DENIED: " << passengerName << " - on no-fly list and TSA not cleared.\n";
+            }
+            else {
+                cout << "DENIED: " << passengerName << " - passenger on no-fly list.\n";
+            }
+
             deniedCount++;
-        } 
+        }
+
+        else if (!hasValidId) {
+            if (!tsaValid) {
+                cout << "DENIED: " << passengerName << " - no valid ID and TSA not cleared.\n";
+            }
+            else {
+                cout << "DENIED: " << passengerName << " - no valid identification.\n";
+            }
+            deniedCount++;
+        }
+        else if (!tsaValid) {
+            cout << "DENIED: " << passengerName << " - TSA clearance not met.\n";
+            deniedCount++;
+        }
         else {
             cout << "CLEARED: " << passengerName << "\n";
             clearedCount++;
@@ -149,6 +219,47 @@ int main(){
         // ============================================
 }
 
+//Excercise 1
+//these were the results of my excercise 1
+//============================================
+//       REGIONAL AIR -- BOARDING SUMMARY
+// ============================================
+//      Passengers screened:      5
+//      Cleared for boarding:     2 ( 40.0% ) 
+//      Denied boarding:          3 ( 60.0% ) 
+// --------------------------------------------
+//      Economy seats:            0
+//      Business seats:           1
+//      First Class seats:        1
+// ============================================
+//      Steak meals:            2
+//      Salmon meals:           0
+//      Turkey meals:           0
+// ============================================
+//      Food revenue:          $ 30
+//      Seat revenue:          $ 1900
+//      Total revenue:         $ 1930
+// ============================================
+
+//Excercise 2
+// --- Passenger 1 of 3 ---
+// Passenger name: ger
+// Age: 19
+// On no-fly list? (Y/N): n
+// Valid government ID? (Y/N): y
+// CLEARED: ger
+// Select seat class:
+//  1 - Economy
+//  2 - Business
+//  3 - First Class
+// Choice: 1
+// Economy Confirmed.
+// Business Confirmed.
+
+// instead of behaving normally, breaking the break; confirms the rest of the business class and then breaks. 
+// the reason why it does this is becasue the switch continues through on the the next line until the switch ends.
+
+
 
 
 //excercise 3
@@ -171,3 +282,16 @@ int main(){
 //added seat revenue count 
 //added food count
 //added food revenue
+
+
+//creative feature 2
+// What feature did you add? Describe it in 1–2 sentences.
+    // added a tsa logic screener, and then made a pyramid filter of denial messages for each mixture of scenarios.
+// What principle about decision logic design did you learn from the AI conversation that shaped your implementation?
+    //I learn that the order of the conditions matters, specfically that order matters at large scale,
+    // and that the smallest errors result in the lasrgest mistakes costing 100s of lives.
+// Why did you choose this feature over other ideas you considered during the conversation?
+    //I chose this because it was an important design choice for logic that I noticed was missing.
+// What would you add next if you had more time — and how would the concept you learned apply to that extension?
+    //I would want to make functions that actually validate properly. I also would want to know if there was a cleaner way 
+    //of doing the pyramid logic instead of having to write out every if statement.

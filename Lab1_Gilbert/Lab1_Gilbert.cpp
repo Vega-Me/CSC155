@@ -13,22 +13,27 @@
 #include <cmath>
 using namespace std;
 const int MAX_BUILDINGS = 10;
+const int MIN_BUILDINGS = 3;
 const double COST_PER_KWH = 0.1347;
 const double CO2_PER_KWH = 0.386;
 
 
 int main() {
 int buildingCount;     // # of buildings
-int maxBuildings = 5; // max buildings
 string buildingName;   // name of building
 double dailyKwh;       // kwh consumed today
-double totalKwh;       // total across all buildings
+double totalKwh = 0;       // total across all buildings
 double totalCost;      // electric cost in dollars
-double totalCo2;       // total co2 emmissions
+double totalCo2;       // total co2 emissions
 double avgKwh;         // avg consumption per building
 
-cout << "\nHow many buildings are you reporting on? (1-" << maxBuildings << "):  ";
-cin >> buildingCount;
+do {
+    cout << "\nHow many buildings are you reporting on? (3-" << MAX_BUILDINGS << "):  ";
+    cin >> buildingCount;
+    if (buildingCount < MIN_BUILDINGS || buildingCount > MAX_BUILDINGS)
+        cout << "Invalid Input, try again.";
+} while (buildingCount < MIN_BUILDINGS || buildingCount > MAX_BUILDINGS);
+
 cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
 for (int i = 1; i <= buildingCount; i++) {
@@ -41,9 +46,9 @@ for (int i = 1; i <= buildingCount; i++) {
 
     totalKwh += dailyKwh;
 
-    totalCost = totalKwh*COST_PER_KWH; // total electricity cost
-    totalCo2 = totalKwh*CO2_PER_KWH;   // total carbon footprint in kg
-    avgKwh = totalKwh/buildingCount;   // average consumption per building
+    totalCost = totalKwh * COST_PER_KWH; // total electricity cost
+    totalCo2 = totalKwh * CO2_PER_KWH;   // total carbon footprint in kg
+    avgKwh = totalKwh / buildingCount;   // average consumption per building
 }
 
 cout << fixed << setprecision(2);      // set precision changes the decimal places in the report to 4
