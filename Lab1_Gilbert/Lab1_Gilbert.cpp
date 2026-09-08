@@ -51,7 +51,7 @@ for (int i = 1; i <= buildingCount; i++) {
     avgKwh = totalKwh / buildingCount;   // average consumption per building
 }
 
-cout << fixed << setprecision(2);      // set precision changes the decimal places in the report to 4
+cout << fixed << setprecision(2);      // set precision changes the decimal places in the report to 2
 cout << '\n';
 cout << "=========================================\n";
 cout << "   OAKTON CAMPUS ENERGY SUMMARY REPORT\n";

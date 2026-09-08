@@ -294,8 +294,9 @@ bool   inputValidation(int& input) {
 
 // Step 3 — Creative Feature Documentation
 
-//     What function did you add? Write its complete signature and describe what it does in one sentence.
-//              double farheneittoKelvin(double f), it converts ferhenheit to kelvin using the formula (f - 32) / 1.8 + 273.15.
+//     What function did you add? Write its complet e signature and describe what it does in one sentence.
+//              double farheneittoKelvin(double f), it converts ferhenheit to kelvin using the formula (f - 32) / 1.8 + 273.15. And I added a way to do 
+//          input validation much more efficently by using pass by reference.
 //     Did you use pass-by-value or pass-by-reference in your new function, and why? What would go wrong if you had chosen the other approach?
 //              I used both, I used pass-by-reference and pass-by-value. I used pass-by-reference for the validation
 //              and then I used pass-by-value for the actual function doing the equation. I did this because the validation 
@@ -303,7 +304,11 @@ bool   inputValidation(int& input) {
 //              other ways of validating but this one seemed the most compressed. Otherwise I'd have to start doing if then statements.
 //              If I used pass-by-reference for the actual function nothing would change because the        
 //     Why did you choose this particular extension over other ideas you considered?
-//              I chose this becausse it seemed to fit the most. I didn't want to go against the rubric.
+//              Because I wanted it to be optimized without having to do if statements all the time. I also wanted
+//          it to relate to using functions like we learned in the labs. It was difficult to figure out how to 
+//        use "!" in the same function notation as a function. I also learned that we could just use cin inside of a function
+//          to change the original function which was very nice, I'm starting to realized that coding can be extremely intuitive
+//          at times. I also wanted to convert farhenheit to kelvin as another way to measure temperature.
 //     What would you add next to make this a more complete weather analysis tool — and what function design decisions would that require?
 //              I would add a temperature predictor that takes the temperature x hours ago and compares it to the current temperature to 
 //              show what the temperature could be in the desired hours with probability %
