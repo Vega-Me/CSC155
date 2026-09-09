@@ -103,6 +103,7 @@ cin.ignore();
             cin >> scoreGrid[i][j];
           }
     }
+    for ()
 
 
 }
