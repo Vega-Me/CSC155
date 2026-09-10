@@ -31,10 +31,11 @@ double averagePoints = 0;
 void calcAvg(double& averagePoints);
 void calchighScorers(vector<string>& highScorers);
 void displayTeams(int scoregrid[NUM_TEAMS][NUM_GAMES]);
+int linearSearch(string playerNames[], int playerPts[], int numPlayers, string target);
 
 
 int main() {
-
+/*
     //Part A
 cout << "Number of players (3-10): ";
 cin >> numPlayers;
@@ -92,19 +93,62 @@ cin.ignore();
             cin >> scoreGrid[i][j];
           }
     }
+*/
 
-    // DISPLAYING DATA
-    for (int i = 0; i < NUM_TEAMS; i++) {
-        
-        cout << teamNames[i] << setw(4) << scoreGrid[i][0];
+// DISPLAYING DATA
 
-        for (int j = 1; j < NUM_GAMES; j++) {
-            cout << " G" << j + 1 << ": ";
-            cin >> scoreGrid[i][j];
-          }
+    cout << "\n=============================================\n";
+    cout << "             TOTALS AND BEST SCORES\n";
+    cout << "=============================================\n";
+    cout << "\n        ";
+
+    for (int j = 0; j < NUM_GAMES; j++) {           //couts all the G#s
+        cout << setw(4) << "G" << j + 1;
     }
-    for ()
+    cout << '\n';
 
+    for (int i = 0; i < NUM_TEAMS; i++) {
+        cout << setw(11) << left << teamNames[i];
+
+        for (int j = 0; j < NUM_GAMES; j++) {
+            cout << setw(5) << scoreGrid[i][j];
+        }
+        cout << '\n';
+    }    
+
+    for (int i = 0; i < NUM_TEAMS; i++) {               // displays totals and best score 
+        int totalT = 0;
+        int bestS = scoreGrid[i][0];
+
+        for (int j = 0; j < NUM_GAMES; j++) {
+            totalT += scoreGrid[i][j];
+
+            if (scoreGrid[i][j] > bestS) {
+                bestS = scoreGrid[i][j];
+            }
+        }
+        cout << left << setw(10) << teamNames[i] << "Total score: " << totalT << " Best Score: " << bestS << '\n';
+    }
+
+    for (int j = 0; j < NUM_GAMES; j++) {               //displays highest game
+        int highestScore = scoreGrid[0][j];
+        int highestTeam = 0;
+
+        for (int i = 1; i < NUM_TEAMS; i++) {
+            if (scoreGrid[i][j] > highestScore) {
+                highestScore = scoreGrid[i][j];
+                highestTeam = i;
+            }
+        }
+        if (j == 0) {
+            cout << "\n=============================================\n";
+            cout << "         BEST TEAMS AND SCORES PER GAME\n";
+            cout << "=============================================\n";
+        }
+        cout << "G" << j + 1
+         << ": " << teamNames[highestTeam]
+         << " - " << highestScore << '\n';
+    }
 
 }
 
@@ -137,6 +181,18 @@ void calchighScorers(vector<string>& highScorers) {
 }
 //---------------------------------------------------------------
 
+
+//---------------------------------------------------------------				
+// Seaerches for target and gives stats				
+int linearSearch(string playerNames[], int playerPts[], int numPlayers, string target) {				
+    for (int i = 0; i < numPlayers; i++) {				
+        if (playerNames[i] == target) {				
+        return i;				
+        }							
+    }				
+    return -1;
+}				
+//---------------------------------------------------------------				
 
 
 
