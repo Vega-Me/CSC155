@@ -27,6 +27,8 @@ int lowestP = 100;
 int totalPoints = 0;
 double averagePoints = 0;
 
+string target;
+
 //Prototypes
 void calcAvg(double& averagePoints);
 void calchighScorers(vector<string>& highScorers);
@@ -79,7 +81,7 @@ cin.ignore();
 
 
 
-//=============================================================
+//==================================================================================================
     //Part B
 
     //  COLLECT DATA
@@ -149,6 +151,35 @@ cin.ignore();
          << ": " << teamNames[highestTeam]
          << " - " << highestScore << '\n';
     }
+    cout << "\n";
+//==================================================================================================
+
+//  Part C
+    string target;
+    int result;
+    do {
+    cout << "Fetch Player stats: ";
+    cin >> target;
+    result = linearSearch(playerNames, playerPts, numPlayers, target);
+    } while (result == -1);
+    cout << playerNames[result] << "Points: " << playerPts ;
+
+
+//  C2
+    cout << "--- Season Rankings (Highest to Lowest) ---";                              
+    for (int i = 0; i < numPlayers; i++) {
+        cout << i + 1 << ". " << playerNames[i] << right << setw(15) << playerPts[i];
+    }
+
+
+
+//     --- Season Rankings (Highest to Lowest) ---
+//  1. Jordan Reyes        412 pts
+//  2. Maya Chen           388 pts
+//  3. Devon Okafor        321 pts
+//  4. Priya Singh         298 pts
+//  5. Luca Ferrara        245 pts
+
 
 }
 
