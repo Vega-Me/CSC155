@@ -37,6 +37,7 @@ void calchighScorers(vector<string>& highScorers);
 void displayTeams(int scoregrid[NUM_TEAMS][NUM_GAMES]);
 int linearSearch(string names[], int pts[], int n, string target);
 void findPeaks(int grid[][NUM_GAMES], int rows, int cols);
+void selectionSort(string names[], int pts[], int n);
 
 
 int main() {
@@ -227,29 +228,8 @@ cin.ignore();
     }
 
 //  C2
-    cout << "\n--- Season Rankings (Highest to Lowest) ---";                              
-    for (int i = 0; i < numPlayers - 1; i++) {          //stops before last
 
-        int maxPlaceholder = i;
-
-        for (int j = i + 1; j < numPlayers; j++) {      //checks last one with i + 1
-
-            if (playerPts[j] > playerPts[maxPlaceholder]) {
-
-                maxPlaceholder = j;
-
-            }
-
-        }
-
-        swap(playerPts[i], playerPts[maxPlaceholder]);
-        swap(playerNames[i], playerNames[maxPlaceholder]);
-
-    }
-
-    for (int i = 0; i < numPlayers; i++) {
-        cout << "\n" << right << setw(18) << playerNames[i] << ": " << playerPts[i] << " points";
-    }
+selectionSort(playerNames, playerPts, numPlayers);
 
 
 //==================================================================================================
@@ -301,6 +281,39 @@ int linearSearch(string playerNames[], int pts[], int numPlayers, string target)
     return -1;
 }				
 //---------------------------------------------------------------			
+
+
+//---------------------------------------------------------------
+void selectionSort(string playerNames[], int playerPts[], int numPlayers) {
+    cout << "\n--- Season Rankings (Highest to Lowest) ---";                              
+    for (int i = 0; i < numPlayers - 1; i++) {          //stops before last
+
+        int maxPlaceholder = i;
+
+        for (int j = i + 1; j < numPlayers; j++) {      //checks last one with i + 1
+
+            if (playerPts[j] > playerPts[maxPlaceholder]) {
+
+                maxPlaceholder = j;
+
+            }
+
+        }
+
+        swap(playerPts[i], playerPts[maxPlaceholder]);
+        swap(playerNames[i], playerNames[maxPlaceholder]);
+
+    }
+
+    for (int i = 0; i < numPlayers; i++) {
+        cout << "\n" << right << setw(18) << i + 1 << " " << playerNames[i] << ": " << playerPts[i] << " points";
+    }
+}
+
+//---------------------------------------------------------------
+
+
+
 
 
 //---------------------------------------------------------------
@@ -398,6 +411,8 @@ void findPeaks(int grid[][NUM_GAMES], int teams, int games) {
 
 //excercise 2 
 //if I trace the array the iterations would be 0, then 1, then -1. The final one would be negative 1 because it finally found the number 63.
+//Devon Okafor → index 2
+//Alex Johnson → -1
 
 //excercise 3 
 //so for the selection sort array, the first pass would compare 65 to all of them, and then at the end sway 65 and 12. Then it would compare
@@ -579,5 +594,7 @@ void findPeaks(int grid[][NUM_GAMES], int teams, int games) {
 // What would happen to your feature's correctness if you changed NUM_TEAMS or NUM_GAMES? Is your implementation flexible enough to handle different grid sizes?
 //      Nothing would really happen, I think it's scaleable with grid sizes since I used NUM_TEAMS and NUM_GAMES from the 
 //      procedure. I also now understand the importance of using a declared variable in the beggining as a array size
-//      because otherwise I would've had to declare the array size every single time.
+//      because otherwise I would've had to declare the array size every single time. I would have to change
+//      teamNames though. That is the only thing that isn't automatic which would probabl be fixed
+//      with a for loop to get the names and relate them to points.
 // 
