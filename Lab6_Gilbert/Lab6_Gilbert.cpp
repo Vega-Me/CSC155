@@ -3,6 +3,7 @@
 #include <iostream>
 #include <array>
 #include <algorithm>
+#include <utility>
 using namespace std;
 
 const int MAX_PLAYERS = 10;   // max players on roster
@@ -19,9 +20,9 @@ int scoreGrid[NUM_TEAMS][NUM_GAMES];
 
 //Highest and lowest scorers
 string highestN;
-int highestP = 0;
+int highestP = -1000000;
 string lowestN;
-int lowestP = 100;
+int lowestP = 1000000;
 
 //Total and average points
 int totalPoints = 0;
@@ -33,14 +34,25 @@ string target;
 void calcAvg(double& averagePoints);
 void calchighScorers(vector<string>& highScorers);
 void displayTeams(int scoregrid[NUM_TEAMS][NUM_GAMES]);
-int linearSearch(string playerNames[], int playerPts[], int numPlayers, string target);
+int linearSearch(string playerNames[], int numPlayers, string target);
+void findPeaks(int grid[][NUM_GAMES], int rows, int cols);
 
 
 int main() {
-/*
+
     //Part A
+do {                                                //asks for amount of players
+
 cout << "Number of players (3-10): ";
-cin >> numPlayers;
+
+if (!(cin >> numPlayers)) {
+
+    cin.clear();
+    cin.ignore(1000, '\n');
+    cout << "Invalid Input";
+
+} 
+} while (numPlayers < 3 || numPlayers > 10);
 cin.ignore();
 
     for (int i = 0; i < numPlayers; i++) {          //collect data
@@ -71,17 +83,21 @@ cin.ignore();
     calchighScorers(highScorers);
 
     //Fix this display
-    cout << lowestN << '\n';
-    cout << lowestP << '\n';
-    cout << highestN << '\n';
-    cout << highestP << '\n';
-    cout << fixed << setprecision(1) << averagePoints << '\n';
-    cout << highScorers.size();
 
+    cout << "\n=============================================\n";
+    cout << "            HIGHEST AND LOWEST SCORERS\n";
+    cout << "=============================================\n";
+    cout << "LOWEST:   " << lowestN<< right << setw(5) << lowestP << '\n';
+    cout << "HIGHEST:  " << highestN<< right << setw(5) << highestP << '\n';
+    cout << "AVERAGE:  " << right << setw(5) << fixed << setprecision(1) << averagePoints << '\n';
+    cout << "HIGH SCORERS: ";
+    for (int i = 0; i < highScorers.size(); i++) {cout << highScorers[i] << '\n';}
+    cout << "=============================================\n";
 
 
 
 //==================================================================================================
+
     //Part B
 
     //  COLLECT DATA
@@ -93,9 +109,10 @@ cin.ignore();
         for (int j = 1; j < NUM_GAMES; j++) {       //loops through columns
             cout << " G" << j + 1 << ": ";
             cin >> scoreGrid[i][j];
+            cin.ignore();
           }
     }
-*/
+
 
 // DISPLAYING DATA
 
@@ -109,13 +126,13 @@ cin.ignore();
     }
     cout << '\n';
 
-    for (int i = 0; i < NUM_TEAMS; i++) {
-        cout << setw(11) << left << teamNames[i];
+        for (int i = 0; i < NUM_TEAMS; i++) {
+            cout << setw(11) << left << teamNames[i];
 
-        for (int j = 0; j < NUM_GAMES; j++) {
-            cout << setw(5) << scoreGrid[i][j];
-        }
-        cout << '\n';
+            for (int j = 0; j < NUM_GAMES; j++) {
+                cout << setw(5) << scoreGrid[i][j];
+            }
+            cout << '\n';
     }    
 
     for (int i = 0; i < NUM_TEAMS; i++) {               // displays totals and best score 
@@ -152,6 +169,7 @@ cin.ignore();
          << " - " << highestScore << '\n';
     }
     cout << "\n";
+
 //==================================================================================================
 
 //  Part C
@@ -160,26 +178,43 @@ cin.ignore();
     do {
     cout << "Fetch Player stats: ";
     cin >> target;
-    result = linearSearch(playerNames, playerPts, numPlayers, target);
+    result = linearSearch(playerNames, numPlayers, target);
     } while (result == -1);
-    cout << playerNames[result] << "Points: " << playerPts ;
+    cout << playerNames[result] << ": " << playerPts[result] << " points\n";
 
 
 //  C2
-    cout << "--- Season Rankings (Highest to Lowest) ---";                              
+    cout << "\n--- Season Rankings (Highest to Lowest) ---";                              
+    for (int i = 0; i < numPlayers - 1; i++) {          //stops before last
+
+        int maxPlaceholder = i;
+
+        for (int j = i + 1; j < numPlayers; j++) {      //checks last one with i + 1
+
+            if (playerPts[j] > playerPts[maxPlaceholder]) {
+
+                maxPlaceholder = j;
+
+            }
+
+        }
+
+        swap(playerPts[i], playerPts[maxPlaceholder]);
+        swap(playerNames[i], playerNames[maxPlaceholder]);
+
+    }
+
     for (int i = 0; i < numPlayers; i++) {
-        cout << i + 1 << ". " << playerNames[i] << right << setw(15) << playerPts[i];
+        cout << "\n" << playerNames[i] << ": " << playerPts[i] << " points";
     }
 
 
+//==================================================================================================
 
-//     --- Season Rankings (Highest to Lowest) ---
-//  1. Jordan Reyes        412 pts
-//  2. Maya Chen           388 pts
-//  3. Devon Okafor        321 pts
-//  4. Priya Singh         298 pts
-//  5. Luca Ferrara        245 pts
+// Part D
 
+    cout << "\n";
+    findPeaks(scoreGrid, NUM_TEAMS, NUM_GAMES);
 
 }
 
@@ -215,7 +250,7 @@ void calchighScorers(vector<string>& highScorers) {
 
 //---------------------------------------------------------------				
 // Seaerches for target and gives stats				
-int linearSearch(string playerNames[], int playerPts[], int numPlayers, string target) {				
+int linearSearch(string playerNames[], int numPlayers, string target) {				
     for (int i = 0; i < numPlayers; i++) {				
         if (playerNames[i] == target) {				
         return i;				
@@ -223,7 +258,110 @@ int linearSearch(string playerNames[], int playerPts[], int numPlayers, string t
     }				
     return -1;
 }				
-//---------------------------------------------------------------				
+//---------------------------------------------------------------			
+
+
+//---------------------------------------------------------------
+//the monster function
+void findPeaks(int grid[][NUM_GAMES], int teams, int games) {
+
+    int count = 0;
+
+    for (int t = 0; t < teams; t++ ) {                          //choose a row
+
+        for (int g = 0; g < games; g++) {                       //choose a column
+
+            bool isMax = true;
+            bool isMin = true;
+
+            for (int dt = -1; dt <= 1; dt++) {                      //neighbor 3x3 scan by row
+
+                for (int dg = -1; dg <= 1; dg++) {                   //neighbor 3x3 scan by column
+
+                    if (dt != 0 || dg != 0) {
+
+                        int neighborT = t + dt;
+                        int neighborG = g + dg;
+
+                        if (neighborG >= 0 && neighborG < games && neighborT >= 0 && neighborT < teams) {
+
+                            if (grid[t][g] <= grid[neighborT][neighborG]) {
+                                isMax = false;
+                            }
+
+                            if (grid[t][g] >= grid[neighborT][neighborG]) {
+                                isMin = false;
+                            }
+
+                        }
+
+                    }
+
+                } //dg close
+
+            } //dt close
+
+            if (isMax || isMin) {
+
+                string category;
+                count++;
+
+                if ((t == 0 || t == teams - 1) && (g == 0 || g == games - 1)) {
+                    category = "CORNER";
+                }
+                else if (t == 0 || t == teams - 1 || g == 0 || g == games - 1) {
+                    category = "EDGE";
+                }
+                else {
+                    category = "INTERIOR"; //crocidle alligator
+                } 
+
+                cout << "\nPeak " << count << right << setw(5) << grid[t][g] << setw(5) << " Row: " 
+                << t << setw(5) << " Column: " << g << right << setw(15) << "Category: "
+                << category << setw(8) << "Type: ";
+                if (isMax) {
+                    cout << "Local Max\n";
+                }
+                else {
+                    cout << "Local Min\n";
+                }
+
+            }
+            
+        } //g close
+
+    } //t close
+
+}
+//---------------------------------------------------------------
+
+
+// Go through every cell in scoreGrid.
+// For the current cell, compare its value against all valid neighboring cells.
+// If it is greater than all neighbors, it is a local maximum.
+// If it is less than all neighbors, it is a local minimum.
+// If it is neither, don't display it.
+// For every max/min you do find, display:
+// its value
+// its row and column index
+// whether its location is CORNER, EDGE, or INTERIOR
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
