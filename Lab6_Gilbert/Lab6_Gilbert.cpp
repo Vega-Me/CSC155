@@ -16,6 +16,7 @@ string teamNames[] = {"HAWKS", "FALCONS", "EAGLES", "OWLS"};
 int playerPts[MAX_PLAYERS];
 int numPlayers;
 vector<string> highScorers;
+vector<int> seasonScores;
 int scoreGrid[NUM_TEAMS][NUM_GAMES];
 
 //Highest and lowest scorers
@@ -34,7 +35,7 @@ string target;
 void calcAvg(double& averagePoints);
 void calchighScorers(vector<string>& highScorers);
 void displayTeams(int scoregrid[NUM_TEAMS][NUM_GAMES]);
-int linearSearch(string playerNames[], int numPlayers, string target);
+int linearSearch(string names[], int pts[], int n, string target);
 void findPeaks(int grid[][NUM_GAMES], int rows, int cols);
 
 
@@ -49,7 +50,7 @@ if (!(cin >> numPlayers)) {
 
     cin.clear();
     cin.ignore(1000, '\n');
-    cout << "Invalid Input";
+    cout << "Invalid Input\n";
 
 } 
 } while (numPlayers < 3 || numPlayers > 10);
@@ -89,6 +90,7 @@ cin.ignore();
     cout << "=============================================\n";
     cout << "LOWEST:   " << lowestN<< right << setw(5) << lowestP << '\n';
     cout << "HIGHEST:  " << highestN<< right << setw(5) << highestP << '\n';
+    cout << "TOTAL POINTS: " << totalPoints << '\n';
     cout << "AVERAGE:  " << right << setw(5) << fixed << setprecision(1) << averagePoints << '\n';
     cout << "HIGH SCORERS: ";
     for (int i = 0; i < highScorers.size(); i++) {cout << highScorers[i] << '\n';}
@@ -147,6 +149,7 @@ cin.ignore();
             }
         }
         cout << left << setw(10) << teamNames[i] << "Total score: " << totalT << " Best Score: " << bestS << '\n';
+        seasonScores.push_back(totalT);
     }
 
     for (int j = 0; j < NUM_GAMES; j++) {               //displays highest game
@@ -168,20 +171,60 @@ cin.ignore();
          << ": " << teamNames[highestTeam]
          << " - " << highestScore << '\n';
     }
-    cout << "\n";
+
+    cout << "\n=============================================\n";
+    cout << "               TEAM PLACEMENTS\n";
+    cout << "=============================================\n";
+    cout << "Rank  Team      Total Score\n";
+    for (int i = 0; i < NUM_TEAMS - 1; i++) {
+        int maxPlaceholder = i;
+
+        for (int j = i + 1; j < NUM_TEAMS; j++) {
+            
+            if (seasonScores[j] > seasonScores[maxPlaceholder]) {
+                maxPlaceholder = j;
+            }
+
+        }
+
+        swap(seasonScores[i], seasonScores[maxPlaceholder]);
+        swap(teamNames[i], teamNames[maxPlaceholder]);
+
+    }
+    for (int i = 0; i < NUM_TEAMS - 1; i++) {
+        
+        if (seasonScores[i] == seasonScores[i + 1]) {
+
+            cout << "TIE BETWEEN: " << teamNames[i] << " AND " << teamNames[i + 1];
+
+        }
+    }
+    for (int i = 0; i < NUM_TEAMS; i++) {
+        cout << right << setw(4) << i + 1 << "   " << left << setw(10) << teamNames[i] << seasonScores[i] << "points!" << '\n';
+    }
+    cout << "=============================================\n";
+
 
 //==================================================================================================
 
-//  Part C
+//  Part C1
     string target;
     int result;
-    do {
-    cout << "Fetch Player stats: ";
-    cin >> target;
-    result = linearSearch(playerNames, numPlayers, target);
-    } while (result == -1);
+   
+    cout << "Pick a player to view stats for: " << endl;
+        for (int i = 0; i < numPlayers; i++) {
+            cout << playerNames[i] << "\n";
+        }
+    cout << "\n" << endl;
+    getline(cin, target);
+    result = linearSearch(playerNames, playerPts, numPlayers, target);
+    
+    if (result == -1) {
+        cout << "Player not found.\n";
+    }
+    else {
     cout << playerNames[result] << ": " << playerPts[result] << " points\n";
-
+    }
 
 //  C2
     cout << "\n--- Season Rankings (Highest to Lowest) ---";                              
@@ -205,17 +248,16 @@ cin.ignore();
     }
 
     for (int i = 0; i < numPlayers; i++) {
-        cout << "\n" << playerNames[i] << ": " << playerPts[i] << " points";
+        cout << "\n" << right << setw(18) << playerNames[i] << ": " << playerPts[i] << " points";
     }
 
 
 //==================================================================================================
 
 // Part D
-
-    cout << "\n";
+    cout << "\n=============================================";
     findPeaks(scoreGrid, NUM_TEAMS, NUM_GAMES);
-
+    cout << "\n=============================================\n";
 }
 
 
@@ -250,7 +292,7 @@ void calchighScorers(vector<string>& highScorers) {
 
 //---------------------------------------------------------------				
 // Seaerches for target and gives stats				
-int linearSearch(string playerNames[], int numPlayers, string target) {				
+int linearSearch(string playerNames[], int pts[], int numPlayers, string target) {				
     for (int i = 0; i < numPlayers; i++) {				
         if (playerNames[i] == target) {				
         return i;				
@@ -273,6 +315,7 @@ void findPeaks(int grid[][NUM_GAMES], int teams, int games) {
 
             bool isMax = true;
             bool isMin = true;
+            int neighborcount = 0;
 
             for (int dt = -1; dt <= 1; dt++) {                      //neighbor 3x3 scan by row
 
@@ -293,6 +336,8 @@ void findPeaks(int grid[][NUM_GAMES], int teams, int games) {
                                 isMin = false;
                             }
 
+                            neighborcount++;
+
                         }
 
                     }
@@ -306,24 +351,24 @@ void findPeaks(int grid[][NUM_GAMES], int teams, int games) {
                 string category;
                 count++;
 
-                if ((t == 0 || t == teams - 1) && (g == 0 || g == games - 1)) {
+                if (neighborcount == 3) {
                     category = "CORNER";
                 }
-                else if (t == 0 || t == teams - 1 || g == 0 || g == games - 1) {
+                else if (neighborcount == 5) {
                     category = "EDGE";
                 }
                 else {
                     category = "INTERIOR"; //crocidle alligator
                 } 
 
-                cout << "\nPeak " << count << right << setw(5) << grid[t][g] << setw(5) << " Row: " 
-                << t << setw(5) << " Column: " << g << right << setw(15) << "Category: "
-                << category << setw(8) << "Type: ";
+                cout << "\nPeak " << count << ", " << "Points: " << right << setw(5) << grid[t][g] << ", "
+                << " Row: " << t << " Column: " << g << right << setw(15) << "Category: "
+                << setw(10) << category << setw(8) << "Type: ";
                 if (isMax) {
-                    cout << "Local Max\n";
+                    cout << "Local Max";
                 }
                 else {
-                    cout << "Local Min\n";
+                    cout << "Local Min";
                 }
 
             }
@@ -336,15 +381,6 @@ void findPeaks(int grid[][NUM_GAMES], int teams, int games) {
 //---------------------------------------------------------------
 
 
-// Go through every cell in scoreGrid.
-// For the current cell, compare its value against all valid neighboring cells.
-// If it is greater than all neighbors, it is a local maximum.
-// If it is less than all neighbors, it is a local minimum.
-// If it is neither, don't display it.
-// For every max/min you do find, display:
-// its value
-// its row and column index
-// whether its location is CORNER, EDGE, or INTERIOR
 
 
 
@@ -355,17 +391,7 @@ void findPeaks(int grid[][NUM_GAMES], int teams, int games) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-//pre lab
+//              PRE LAB
 //
 //excercise 1; gives me a error when trying to compile instead of running the program when I try 
 //to reach position outside of the array
@@ -401,3 +427,157 @@ void findPeaks(int grid[][NUM_GAMES], int teams, int games) {
     // cout << '\n';
 
 
+
+
+
+
+
+
+
+//                                  POST LAB
+
+// Excercise 1
+// Number of players (3-10): 5
+// Player 1 name: Jordan Reyes
+// Season points: 412
+// Player 2 name: Maya Chen
+// Season points: 388
+// Player 3 name: Devon Okafor
+// Season points: 321
+// Player 4 name: Priya Singh
+// Season points: 298
+// Player 5 name: Luca Ferrara
+// Season points: 245
+
+// =============================================
+//             HIGHEST AND LOWEST SCORERS
+// =============================================
+// LOWEST:   Luca Ferrara  245
+// HIGHEST:  Jordan Reyes  412
+// AVERAGE:  332.8
+// HIGH SCORERS: Jordan Reyes
+// Maya Chen
+// =============================================
+
+// Enter score for team HAWKS
+//  G1:72
+//  G2: 68
+//  G3: 81
+//  G4: 55
+//  G5: 90
+//  G6: 77
+
+// Enter score for team FALCONS
+//  G1:61
+//  G2: 74
+//  G3: 69
+//  G4: 88
+//  G5: 52
+//  G6: 83
+
+// Enter score for team EAGLES
+//  G1:85
+//  G2: 59
+//  G3: 76
+//  G4: 71
+//  G5: 
+// 64
+//  G6: 92
+
+// Enter score for team OWLS
+//  G1:48
+//  G2: 83
+//  G3: 65
+//  G4: 79
+//  G5: 88
+//  G6: 60
+
+// =============================================
+//              TOTALS AND BEST SCORES
+// =============================================
+
+//            G1   G2   G3   G4   G5   G6
+// HAWKS      72   68   81   55   90   77   
+// FALCONS    61   74   69   88   52   83   
+// EAGLES     85   59   76   71   64   92   
+// OWLS       48   83   65   79   88   60   
+// HAWKS     Total score: 443 Best Score: 90
+// FALCONS   Total score: 427 Best Score: 88
+// EAGLES    Total score: 447 Best Score: 92
+// OWLS      Total score: 423 Best Score: 88
+
+// =============================================
+//          BEST TEAMS AND SCORES PER GAME
+// =============================================
+// G1: EAGLES - 85
+// G2: OWLS - 83
+// G3: HAWKS - 81
+// G4: FALCONS - 88
+// G5: HAWKS - 90
+// G6: EAGLES - 92
+
+// Fetch Player stats: Devon Okafor
+// Devon Okafor: 321 points
+
+// --- Season Rankings (Highest to Lowest) ---
+// Jordan Reyes        : 412 points
+// Maya Chen           : 388 points
+// Devon Okafor        : 321 points
+// Priya Singh         : 298 points
+// Luca Ferrara        : 245 points
+
+// Peak 1, Points:    90,  Row: 0 Column: 4     Category: EDGE  Type: Local Max
+// Peak 2, Points:    52,  Row: 1 Column: 4     Category: INTERIOR  Type: Local Min
+// Peak 3, Points:    85,  Row: 2 Column: 0     Category: EDGE  Type: Local Max
+// Peak 4, Points:    92,  Row: 2 Column: 5     Category: EDGE  Type: Local Max
+// Peak 5, Points:    48,  Row: 3 Column: 0     Category: CORNER  Type: Local Min
+// Peak 6, Points:    60,  Row: 3 Column: 5     Category: CORNER  Type: Local Min
+
+
+// Excercise 2
+// Fetch Player stats: Devon Okafor
+// Devon Okafor: 321 points
+// 
+// IF I input the unkown roster, my program returns "Invalid Input"
+
+
+//Excercise 3
+// Sort Sync Verification
+// After sorting by points descending, verify that each name still appears next to the correct points total. 
+// Then add a player named "Test Player" with 412 points (a tie with Jordan Reyes).
+//  Run the sort again. Whose name appears first in a tie? 
+//  Record the result and explain in a comment whether your selection sort is stable (preserves original order for equal elements) or unstable, and why it matters.
+
+//answer:
+//When I add Test Player with 412 points to the two arrays what happens is that when they initially cross each other
+// Test Player > Jordan Reyes would end up being false. So Jordan Reyes remains at position 0 after the final
+//sorting process. My selection process is unstable but preserves the original order, the reason why
+//being unstable or stable matters is because we want to account for a wide variety of scenarios that can happen
+//otherwise we'll have bugs and errors that will go unoticed, and at scale that can be the cause of an entire program's failure.
+
+
+
+
+
+
+
+
+
+//                          CREATIVE FINAL FEATURE
+// What feature did you add and which part of the lab does it extend?
+//      So I redid the neighbor checking to create a counter that simplifies filtering whether or not a peak is a corner
+//      edge, or interior. I also added a sorting to the teams and then ranked them by best performing temas. 
+//      Giving ranks based on how well they did in the season.
+// What did you learn from the AI conversation about boundary handling or algorithm design that shaped your implementation?
+//      I learned that there are always better ways to do things, whilst talking to the ai 
+//      I kind of realized that instead of filtering the positions to get the catgeorys. That I can have a well placed counter
+//      tell me exactly how many neighbors surrounded the position in the array. I also wanted to reimplement a learned
+//      use from the lab so what I did was reuse the ranking loops for ranking each team during the season (games played/columns).
+// Why did you choose this feature over others you considered?
+//      I choose both these features because I like thinking about how systems can be better optomized, I also wanted to hammer down
+//      the pre-existing lesson of using the for loops to rank array positions.
+// What would happen to your feature's correctness if you changed NUM_TEAMS or NUM_GAMES? Is your implementation flexible enough to handle different grid sizes?
+//      Nothing would really happen, I think it's scaleable with grid sizes since I used NUM_TEAMS and NUM_GAMES from the 
+//      procedure. I also now understand the importance of using a declared variable in the beggining as a array size
+//      because otherwise I would've had to declare the array size every single time.
+// 
